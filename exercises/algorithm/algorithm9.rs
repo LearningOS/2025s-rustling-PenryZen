@@ -1,8 +1,8 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +37,9 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.count += 1;
+        self.items.push(value);
+        self.sift_up(self.count);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +59,46 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+        if right > self.count {
+            left
+        } else {
+            let cmp = self.comparator;
+            if cmp(&self.items[left], &self.items[right]) {
+                left
+            } else {
+                right
+            }
+        }
+    }
+
+    fn sift_up(&mut self, idx: usize) {
+        let cmp = self.comparator;
+        let mut current = idx;
+        while current > 1 {
+            let parent = self.parent_idx(current);
+            if cmp(&self.items[current], &self.items[parent]) {
+                self.items.swap(current, parent);
+                current = parent;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn sift_down(&mut self, idx: usize) {
+        let cmp = self.comparator;
+        let mut current = idx;
+        while self.children_present(current) {
+            let smallest = self.smallest_child_idx(current);
+            if cmp(&self.items[smallest], &self.items[current]) {
+                self.items.swap(current, smallest);
+                current = smallest;
+            } else {
+                break;
+            }
+        }
     }
 }
 
@@ -84,8 +124,17 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+        let result = self.items.swap_remove(1);
+        self.count -= 1;
+        if self.count > 0 {
+            let last = self.items.pop().unwrap();
+            self.items.insert(1, last);
+            self.sift_down(1);
+        }
+        Some(result)
     }
 }
 
@@ -152,3 +201,4 @@ mod tests {
         assert_eq!(heap.next(), Some(2));
     }
 }
+    
