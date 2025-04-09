@@ -3,7 +3,6 @@
     This question requires you to implement a binary heap function
 */
 
-
 use std::cmp::Ord;
 use std::default::Default;
 
